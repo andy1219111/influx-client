@@ -14,12 +14,6 @@ import (
 
 func main() {
 
-	params.INIParser = &utils.IniParser{}
-	err := params.INIParser.Load("./conf/conf.ini")
-	if err != nil {
-		log.Println("load the config file failed", err)
-	}
-
 	influxClient, err := influx.NewInfluxClient(
 		"127.0.0.1",
 		"8086",
