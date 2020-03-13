@@ -9,9 +9,7 @@ package main
 import (
 	"fmt"
 	"log"
-	influx "test_go/lib/influx-client"
-	"test_go/params"
-	"test_go/utils"
+	influx "gitub.com/andy1219111/influx-client"
 )
 
 func main() {
