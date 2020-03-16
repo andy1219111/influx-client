@@ -133,3 +133,23 @@ func (c *InfluxClient) Insert(data []InfluxPoint, database string, retentionPoli
 	}
 	return nil
 }
+
+/*
+func main() {
+
+	influxClient, err := NewInfluxClient("192.168.1.150", "8086", "work", "123456")
+
+	dur, version, err := influxClient.Ping()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("ping success %v,%s \n", dur, version)
+
+	influxQl := " select * from device_flow"
+	res, err := influxClient.QueryMap(influxQl, "dt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("record: %+v,%d", res, len(res))
+}
+*/
