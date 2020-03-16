@@ -1,8 +1,10 @@
 package client
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"influx-client/res"
 	"net/url"
 	"time"
 
@@ -64,25 +66,34 @@ func (c *InfluxClient) Ping() (dur time.Duration, version string, err error) {
 }
 
 //Query 执行influxDB查询
-func (c *InfluxClient) Query(influxQL, database string) (*influx.Response, error) {
+func (c *InfluxClient) Query(influxQL, database string) (*res.Res, error) {
 	if c.client == nil {
 		err := errors.New("the influx client is nil")
 		return nil, err
 	}
 
+	res := &res.Res{}
 	q := influx.Query{
 		Command:  influxQL,
 		Database: database,
 	}
 	response, err := c.client.Query(q)
 	if err != nil {
-		return response, err
+		return res, err
 	}
 	if err = response.Error(); err != nil {
-		return response, err
+		return res, err
 	}
 
-	return response, nil
+	resJSON, err := response.MarshalJSON()
+	if err != nil {
+		return res, err
+	}
+	err = json.Unmarshal([]byte(resJSON), res)
+	if err != nil {
+		return res, err
+	}
+	return res, nil
 }
 
 //Insert  插入数据
