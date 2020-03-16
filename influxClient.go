@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"influx-client/res"
 	"net/url"
 	"time"
+
+	"github.com/andy1219111/influx-client/res"
 
 	influx "github.com/influxdata/influxdb1-client"
 )
