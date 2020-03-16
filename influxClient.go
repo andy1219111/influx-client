@@ -66,34 +66,58 @@ func (c *InfluxClient) Ping() (dur time.Duration, version string, err error) {
 }
 
 //Query 执行influxDB查询
-func (c *InfluxClient) Query(influxQL, database string) (*res.Res, error) {
+func (c *InfluxClient) Query(influxQL, database string) (*influx.Response, error) {
 	if c.client == nil {
 		err := errors.New("the influx client is nil")
 		return nil, err
 	}
 
-	res := &res.Res{}
 	q := influx.Query{
 		Command:  influxQL,
 		Database: database,
 	}
 	response, err := c.client.Query(q)
 	if err != nil {
-		return res, err
-	}
-	if err = response.Error(); err != nil {
-		return res, err
+		return response, err
 	}
 
+	if err = response.Error(); err != nil {
+		return response, err
+	}
+
+	return response, nil
+}
+
+// QueryMap 将查询结果以map方式返回
+func (c *InfluxClient) QueryMap(influxQL, database string) ([]map[string]interface{}, error) {
+	//初始化存储查询结果的map数组
+	results := make([]map[string]interface{}, 10)
+	results = results[0:0]
+
+	response, err := c.Query(influxQL, database)
+	if err != nil {
+		return results, err
+	}
 	resJSON, err := response.MarshalJSON()
 	if err != nil {
-		return res, err
+		return results, err
 	}
+
+	res := &res.Res{}
 	err = json.Unmarshal([]byte(resJSON), res)
 	if err != nil {
-		return res, err
+		return results, err
 	}
-	return res, nil
+
+	for _, row := range res.Results[0].Series[0].Values {
+		rowMap := make(map[string]interface{})
+		for key, column := range res.Results[0].Series[0].Columns {
+			rowMap[column] = row[key]
+		}
+		results = append(results, rowMap)
+	}
+
+	return results, nil
 }
 
 //Insert  插入数据
