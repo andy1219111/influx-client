@@ -109,7 +109,10 @@ func (c *InfluxClient) QueryMap(influxQL, database string) ([]map[string]interfa
 	if err != nil {
 		return results, err
 	}
-
+	//未查询到记录
+	if len(res.Results) == 0 {
+		results, nil
+	}
 	for _, row := range res.Results[0].Series[0].Values {
 		rowMap := make(map[string]interface{})
 		for key, column := range res.Results[0].Series[0].Columns {
